@@ -1,0 +1,10 @@
+.*
+!.gitignore
+
+*.pyc
+
+# IPython Notebook
+.ipynb_checkpoints
+
+# Django stuff:
+*.log
