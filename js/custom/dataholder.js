@@ -23,7 +23,6 @@ function DataHolder() {
 
             var amount_to_apportion = node.value;
             var num_children = getRandomInt(constant.min_children, constant.max_children)
-            debugger;
 
             // Split amount_to_apportion amongst children.
             var randoms = _.map(d3.range(num_children), function(d) {
