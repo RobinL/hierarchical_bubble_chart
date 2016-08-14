@@ -51,12 +51,17 @@ function MyForceDirected() {
         .append("g")
         .attr("transform", "translate(" + 0 + "," + 0 + ")");
 
+    var me = this
+
     this.draw_from_scratch = function() {
 
         svg.selectAll("*").remove()
 
         this.simulation = d3.forceSimulation(dataholder.nodes)
         this.update_simulation()
+
+
+
 
 
 
@@ -94,7 +99,35 @@ function MyForceDirected() {
 
     }
 
+    var node_drag = d3.drag()
+            .on("start", dragstart)
+            .on("drag", dragmove)
+            .on("end", dragend);
+
+   function dragstart(d) {
+  if (!d3.event.active) me.simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragmove(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragend(d) {
+  if (!d3.event.active) me.simulation.alphaTarget(0);
+
+  if (!document.getElementById('input_fix_drag').checked) {
+  d.fx = null;  //Note fx stands for fixed so that if you set these to a value, it fixes nodes in place
+  d.fy = null;
+}
+}
+
     this.ticked = function() {
+
+
+
 
         var selection = svg.selectAll(".my_links")
             .data(dataholder.links)
@@ -131,7 +164,10 @@ function MyForceDirected() {
             .append("g")
             .attr("class", "my_nodes")
 
-        circles = enterSelection.append("circle")
+
+
+        circles = enterSelection.append("circle").call(node_drag);
+
 
 
         rectangles = enterSelection.append("text")
@@ -187,10 +223,20 @@ function MyForceDirected() {
                 return Math.pow(d.data.value, 0.5) * constant.circle_scale;
             })
             .attr("fill", function(d, i) {
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> gh-pages
                 return colour_scale(d.depth)
 
             })
     }
+
+
+
+
+
 }
 
 
