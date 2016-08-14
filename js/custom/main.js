@@ -14,8 +14,6 @@ constant.max_children = null
 constant.min_children = null
 refresh_constants()
 
-
-
 var dataholder = new DataHolder()
 dataholder.create_csv_data()
 dataholder.transform_csv_data()
@@ -53,14 +51,16 @@ function MyForceDirected() {
     var g = svg.append("g")
         .attr("transform", "translate(" + 0 + "," + 0 + ")");
 
-    var links_layer = svg.append("g")
-    var circles_layer = svg.append("g")
+    var links_layer = g.append("g")
+    var circles_layer = g.append("g")
 
     var me = this
 
     this.draw_from_scratch = function() {
 
-        g.selectAll("*").remove()
+        links_layer.selectAll("*").remove()
+        circles_layer.selectAll("*").remove()
+
 
         this.simulation = d3.forceSimulation(dataholder.nodes)
         this.update_simulation()
@@ -245,8 +245,6 @@ function MyForceDirected() {
             .style("opacity", 0.5)
 
 
-
-
         //Update
         enterSelection.merge(selection)
             .attr("transform", function(d) {
@@ -265,10 +263,6 @@ function MyForceDirected() {
 
         selection.exit().remove()
     }
-
-
-
-
 
 }
 

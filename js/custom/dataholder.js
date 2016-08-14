@@ -76,12 +76,22 @@ function DataHolder() {
 
         // add_label_leaves(csv_data, root)
         var root = root_fn(csv_data)
+
+        //Collapse all to a given level
+
+
         var links = root.links()
         var nodes = flatten(root)
+
+
 
         this.root = root
         this.links = links
         this.nodes = nodes
+
+        
+
+
     }
 
     this.refresh_data = function() {
