@@ -84,4 +84,12 @@ function DataHolder() {
         this.nodes = nodes
     }
 
+    this.refresh_data = function() {
+
+    	this.links = this.root.links()
+        this.nodes = flatten(this.root)
+
+
+    }
+
 }

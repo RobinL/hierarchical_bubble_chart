@@ -53,6 +53,9 @@ function MyForceDirected() {
     var g = svg.append("g")
         .attr("transform", "translate(" + 0 + "," + 0 + ")");
 
+    var links_layer = svg.append("g")
+    var circles_layer = svg.append("g")
+
     var me = this
 
     this.draw_from_scratch = function() {
@@ -66,7 +69,7 @@ function MyForceDirected() {
 
 
     svg.call(d3.zoom()
-        .scaleExtent([1 / 2, 8])
+        .scaleExtent([1 / 4, 256])
         .on("zoom", zoomed));
 
     function zoomed() {
@@ -135,9 +138,23 @@ function MyForceDirected() {
         }
     }
 
+    // Toggle children on click.
+    function clicked(d) {
+      if (!d3.event.defaultPrevented) {
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else {
+          d.children = d._children;
+          d._children = null;
+        }
+      }
+      dataholder.refresh_data()
+    }
+
     this.ticked = function() {
 
-        var selection = g.selectAll(".my_links")
+        var selection = links_layer.selectAll(".my_links")
             .data(dataholder.links)
 
         selection.enter()
@@ -161,7 +178,7 @@ function MyForceDirected() {
         selection.exit().remove();
 
         // Update the nodes…
-        selection = g.selectAll(".my_nodes")
+        selection = circles_layer.selectAll(".my_nodes")
             .data(dataholder.nodes, function(d) {
                 return d.id;
             })
@@ -172,11 +189,7 @@ function MyForceDirected() {
             .append("g")
             .attr("class", "my_nodes")
 
-
-
-        circles = enterSelection.append("circle").call(node_drag);
-
-
+        circles = enterSelection.append("circle").call(node_drag).on("click", clicked);
 
         rectangles = enterSelection.append("text")
             .text(function(d) {
@@ -249,6 +262,8 @@ function MyForceDirected() {
                 return colour_scale(d.depth)
 
             })
+
+        selection.exit().remove()
     }
 
 
@@ -321,4 +336,7 @@ $("#input_toggle_start").on("click", function(d) {
         node.fy = null;
             }
     })
+
+    // myforcedirected.simulation.stop()
+
 })
