@@ -300,18 +300,16 @@ $(".restart_sim").on("change", function(d) {
 
 $("#input_toggle_start").on("click", function(d) {
 
-    // if (myforcedirected.simulation.alpha() < myforcedirected.simulation.alphaMin()) {
-    //     myforcedirected.simulation.alpha(1)
-    //     myforcedirected.simulation.restart()
-    // } else {
-    //     myforcedirected.simulation.alpha(0)
-    //     myforcedirected.simulation.restart()
-    // }
 
     //Iterate through nodes fixing all of them.
     _.each(myforcedirected.simulation.nodes(), function(node) {
 
+        if (node.fx == null) {
         node.fx = node.x;
         node.fy = node.y;
+            } else {
+        node.fx = null;
+        node.fy = null;
+            }
     })
 })
