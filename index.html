@@ -14,14 +14,66 @@
 
 <body>
 
+  <div class="padded_options">
+     
+    <div class=flex_parent>
+      <div class="flex_item">
+      <label>Change circle size</label>
+        <input type="number" class= "refresh_sim" id="input_circle_size" value="8", step="1"/>
+      </div>
+
+      <div class="flex_item">
+      <label>Change distance betweeen links</label>
+        <input type="number" class= "refresh_sim" id="input_link_distance" value="2" step="0.1"/>
+      </div>
+
+      <div class="flex_item">
+      <label>Change link strength</label>
+        <input type="number" class= "refresh_sim" id="input_link_strength" value="0.1" step="0.1"/>
+      </div>
+
+      <div class="flex_item">
+      <label>Change max num levels</label>
+        <input type="number" class= "restart_sim" id="input_max_levels" value="4"/>
+      </div>
+      
+      <div class="flex_item">
+      <label>Change alphamin</label>
+        <input type="number" class= "refresh_sim" id="input_alphamin" value="0.0001"/>
+      </div>
+
+      <div class="flex_item">
+      <label>Change velocityDecay</label>
+        <input type="number" class= "refresh_sim" id="input_velocityDecay" value="0.05"/>
+      </div>
+
+      <div class="flex_item">
+      <label>Change alphaDecay</label>
+        <input type="number" class= "refresh_sim" id="input_alphaDecay" value="0.001"/>
+      </div>
+
+      <div class="flex_item">
+      <label>Change min max children</label>
+        <input type="number" class= "restart_sim" id="input_min_children" value="1"/>
+        <input type="number" class= "restart_sim" id="input_max_children" value="4"/>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
   <div id="svgholder">
   	
   </div>
 
-  <script src="js/d3.v4.min.js"></script>
-  <script src="js/underscore.js"></script>
-  <script src="js/jquery.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/third_party/d3.v4.min.js"></script>
+  <script src="js/third_party/underscore.js"></script>
+  <script src="js/third_party/jquery.js"></script>
+  <script src="js/custom/utils.js"></script>  
+  <script src="js/custom/dataholder.js"></script>  
+  <script src="js/custom/main.js"></script>
 
 </body>
 </html

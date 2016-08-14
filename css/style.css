@@ -1,32 +1,47 @@
-
 body {
   font: 10px sans-serif;
 }
 
-.axis line,
-.axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+.padded_options {
+  position:absolute;
+  left: 0;
+  right: 0;
+  margin-left: 50px;
+  margin-right:50px; 
+  background-color: #fff;
+  border-radius: 5px;
+  top:10px;
 }
 
-.arrow {
-  stroke: #000;
-  stroke-width: 1.5px;
+label {
+  display: block;
 }
 
-.outer,
-.inner {
-  shape-rendering: crispEdges;
+
+
+.flex_parent {
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+  flex-flow: row wrap;
+ }
+
+.flex_item {
+  
+   flex: 1 1 auto;
+   margin:5px;
+   padding: 5px; 
+   border: solid 1px #BCBCBC;
+   border-radius: 5px;
+
 }
 
-.outer {
-  fill: none;
-  stroke: #000;
-}
+line {stroke: black;
+    stroke-width: 0.5px;}
+    
 
-.inner {
-  fill: #ccc;
-  stroke: #000;
-  stroke-dasharray: 3, 4;
+text {
+  font: 24px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  pointer-events: none;
 }
