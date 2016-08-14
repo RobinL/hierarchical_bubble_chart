@@ -43,29 +43,40 @@ function MyForceDirected() {
     innerHeight = outerHeight - margin.top - margin.bottom,
     width = innerWidth - padding.left - padding.right,
     height = innerHeight - padding.top - padding.bottom;
+    var transform = d3.zoomIdentity;
 
     var svg = d3.select("#svgholder")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .append("g")
+        
+    var g = svg.append("g")
         .attr("transform", "translate(" + 0 + "," + 0 + ")");
 
     var me = this
 
     this.draw_from_scratch = function() {
 
-        svg.selectAll("*").remove()
+        g.selectAll("*").remove()
 
         this.simulation = d3.forceSimulation(dataholder.nodes)
         this.update_simulation()
 
-
-
-
-
-
     }
+
+
+    svg.call(d3.zoom()
+        .scaleExtent([1 / 2, 8])
+        .on("zoom", zoomed));
+
+    function zoomed() {
+      g.attr("transform", d3.event.transform);
+    }
+
+    function dragged(d) {
+      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    }
+
 
     this.update_simulation = function() {
         this.simulation.force("link",
@@ -126,7 +137,7 @@ function MyForceDirected() {
 
     this.ticked = function() {
 
-        var selection = svg.selectAll(".my_links")
+        var selection = g.selectAll(".my_links")
             .data(dataholder.links)
 
         selection.enter()
@@ -150,7 +161,7 @@ function MyForceDirected() {
         selection.exit().remove();
 
         // Update the nodes…
-        selection = svg.selectAll(".my_nodes")
+        selection = g.selectAll(".my_nodes")
             .data(dataholder.nodes, function(d) {
                 return d.id;
             })
@@ -175,11 +186,9 @@ function MyForceDirected() {
                 var r = Math.pow(d.data.value, 0.5) * constant.circle_scale
 
 
-                var size = Math.min(2 * r, (2 * r - 8) / this.getComputedTextLength() * 24);
+                var size = Math.min(2 * r, (2 * r - (r/2)) / this.getComputedTextLength() * 24);
                 if (size < 0) {
                     var text_size = 0.01;
-
-
                 } else {
                     var text_size = size;
 
