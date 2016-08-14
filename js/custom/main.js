@@ -223,11 +223,7 @@ function dragend(d) {
                 return Math.pow(d.data.value, 0.5) * constant.circle_scale;
             })
             .attr("fill", function(d, i) {
-<<<<<<< HEAD
-=======
 
-
->>>>>>> gh-pages
                 return colour_scale(d.depth)
 
             })
