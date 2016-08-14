@@ -169,8 +169,8 @@ function MyForceDirected() {
             })
             .attr("fill", function(d, i) {
 
-
-                return colour_scale(i)
+                debugger;
+                return colour_scale(d.depth)
 
             })
     }
