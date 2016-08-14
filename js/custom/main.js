@@ -1,6 +1,6 @@
 //TODO:  zoom and pan
 //TODO:  collapsable
-//TODO:  draggable
+//TODO:  draggable.
 
 var constant = {}
 constant.circle_scale = null
