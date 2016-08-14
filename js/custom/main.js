@@ -1,6 +1,6 @@
 //TODO:  zoom and pan
 //TODO:  collapsable
-//TODO:  draggable.
+
 
 var constant = {}
 constant.circle_scale = null
@@ -100,34 +100,31 @@ function MyForceDirected() {
     }
 
     var node_drag = d3.drag()
-            .on("start", dragstart)
-            .on("drag", dragmove)
-            .on("end", dragend);
+        .on("start", dragstart)
+        .on("drag", dragmove)
+        .on("end", dragend);
 
-   function dragstart(d) {
-  if (!d3.event.active) me.simulation.alphaTarget(0.3).restart();
-  d.fx = d.x;
-  d.fy = d.y;
-}
+    function dragstart(d) {
+        if (!d3.event.active) me.simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
 
-function dragmove(d) {
-  d.fx = d3.event.x;
-  d.fy = d3.event.y;
-}
+    function dragmove(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
 
-function dragend(d) {
-  if (!d3.event.active) me.simulation.alphaTarget(0);
+    function dragend(d) {
+        if (!d3.event.active) me.simulation.alphaTarget(0);
 
-  if (!document.getElementById('input_fix_drag').checked) {
-  d.fx = null;  //Note fx stands for fixed so that if you set these to a value, it fixes nodes in place
-  d.fy = null;
-}
-}
+        if (!document.getElementById('input_fix_drag').checked) {
+            d.fx = null; //Note fx stands for fixed so that if you set these to a value, it fixes nodes in place
+            d.fy = null;
+        }
+    }
 
     this.ticked = function() {
-
-
-
 
         var selection = svg.selectAll(".my_links")
             .data(dataholder.links)
@@ -182,7 +179,7 @@ function dragend(d) {
                 if (size < 0) {
                     var text_size = 0.01;
 
-           
+
                 } else {
                     var text_size = size;
 
@@ -196,18 +193,34 @@ function dragend(d) {
             .attr("dy", ".35em")
             .style("fill", "black")
             .attr("class", "circle_text")
+            .style("opacity", 0.5)
 
         var currency_format = d3.format(",.1f")
         rectangles = enterSelection.append("text")
             .text(function(d) {
-                return "£"+currency_format(d.data.value)+"m";
+                return "£" + currency_format(d.data.value) + "m";
             })
             .style("font-size", function(d) {
-               return d.text_size/2
+                return d.text_size / 2
             })
             .attr("dy", "2em")
-            .style("fill", "black")
+            .style("fill", "white")
             .attr("class", "circle_text")
+            .style("opacity", 0.5)
+
+        var perc_format = d3.format(",.1%")
+        rectangles = enterSelection.append("text")
+            .text(function(d) {
+                return perc_format(d.data.value /
+                    dataholder.root.data.value);
+            })
+            .style("font-size", function(d) {
+                return d.text_size / 2
+            })
+            .attr("dy", "-1.3em")
+            .style("fill", "white")
+            .attr("class", "circle_text")
+            .style("opacity", 0.5)
 
 
 
@@ -257,9 +270,7 @@ function start_change() {
     myforcedirected.simulation.restart()
 }
 
-function stop_change() {
-    myforcedirected.simulation.alphaTarget(0.5);
-}
+
 
 
 
@@ -285,4 +296,22 @@ $(".restart_sim").on("change", function(d) {
     myforcedirected.draw_from_scratch()
 
 
+})
+
+$("#input_toggle_start").on("click", function(d) {
+
+    // if (myforcedirected.simulation.alpha() < myforcedirected.simulation.alphaMin()) {
+    //     myforcedirected.simulation.alpha(1)
+    //     myforcedirected.simulation.restart()
+    // } else {
+    //     myforcedirected.simulation.alpha(0)
+    //     myforcedirected.simulation.restart()
+    // }
+
+    //Iterate through nodes fixing all of them.
+    _.each(myforcedirected.simulation.nodes(), function(node) {
+
+        node.fx = node.x;
+        node.fy = node.y;
+    })
 })
