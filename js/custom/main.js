@@ -131,30 +131,49 @@ function MyForceDirected() {
             .append("g")
             .attr("class", "my_nodes")
 
-
-
         circles = enterSelection.append("circle")
 
+
         rectangles = enterSelection.append("text")
-
-        .text(function(d) {
-
-            return d.data.text;
-        })
-
-        .style("font-size", function(d) {
-            var r = Math.pow(d.data.value, 0.5) * constant.circle_scale
+            .text(function(d) {
+                return d.data.text;
+            })
+            .style("font-size", function(d) {
+                var r = Math.pow(d.data.value, 0.5) * constant.circle_scale
 
 
-            var size = Math.min(2 * r, (2 * r - 8) / this.getComputedTextLength() * 24);
-            if (size < 0) {
-                return 0.01 + "px"
-            } else {
-                return size + "px"
-            }
-        })
+                var size = Math.min(2 * r, (2 * r - 8) / this.getComputedTextLength() * 24);
+                if (size < 0) {
+                    var text_size = 0.01;
+
+           
+                } else {
+                    var text_size = size;
+
+                }
+
+                d.text_size = text_size;
+                return text_size + "px"
+
+
+            })
             .attr("dy", ".35em")
             .style("fill", "black")
+            .attr("class", "circle_text")
+
+        var currency_format = d3.format(",.1f")
+        rectangles = enterSelection.append("text")
+            .text(function(d) {
+                return "£"+currency_format(d.data.value)+"m";
+            })
+            .style("font-size", function(d) {
+               return d.text_size/2
+            })
+            .attr("dy", "2em")
+            .style("fill", "black")
+            .attr("class", "circle_text")
+
+
 
 
         //Update
@@ -168,8 +187,6 @@ function MyForceDirected() {
                 return Math.pow(d.data.value, 0.5) * constant.circle_scale;
             })
             .attr("fill", function(d, i) {
-
-                debugger;
                 return colour_scale(d.depth)
 
             })

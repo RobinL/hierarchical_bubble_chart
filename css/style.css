@@ -45,3 +45,7 @@ text {
   text-anchor: middle;
   pointer-events: none;
 }
+
+.circle_text {
+    pointer-events: none;
+}
