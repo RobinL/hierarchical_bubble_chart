@@ -223,7 +223,7 @@ function MyForceDirected() {
                 return "£" + currency_format(d.data.value) + "m";
             })
             .style("font-size", function(d) {
-                return d.text_size / 2
+                return (d.text_size / 2) + "px"
             })
             .attr("dy", "2em")
             .style("fill", "white")
@@ -237,7 +237,7 @@ function MyForceDirected() {
                     dataholder.root.data.value);
             })
             .style("font-size", function(d) {
-                return d.text_size / 2
+                return (d.text_size / 2) + "px"
             })
             .attr("dy", "-1.3em")
             .style("fill", "white")
