@@ -3,7 +3,6 @@ body {
 }
 
 .padded_options {
- 
   left: 0;
   right: 0;
   margin-left: 50px;
@@ -27,7 +26,6 @@ label {
  }
 
 .flex_item {
-  
    flex: 1 1 auto;
    margin:5px;
    padding: 5px; 
