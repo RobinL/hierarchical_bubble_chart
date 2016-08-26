@@ -12,6 +12,9 @@ constant.velocityDecay = null
 constant.alphaDecay = null
 constant.max_children = null
 constant.min_children = null
+constant.first_run = true
+constant.animation_duration = 1200
+constant.delay_proportion = 3
 refresh_constants()
 
 var dataholder = new DataHolder()
@@ -110,6 +113,184 @@ function MyForceDirected() {
             .alphaMin(constant.alphaMin)
             .alphaDecay(constant.alphaDecay)
             .on("tick", this.ticked)
+            this.enter_exit()
+
+    }
+
+    this.enter_exit = function() {
+
+  
+        var animation_duration = constant.animation_duration;
+        
+
+        var selection = links_layer.selectAll(".my_links")
+            .data(dataholder.links, function(d) {return d.target.id})
+
+
+
+        var min_depth_enter = 100
+        var max_depth_enter = 0
+        var min_depth_exit = 100
+        var max_depth_exit = 0
+
+
+        selection.exit().each(function(d) {
+            min_depth_exit = Math.min(d.source.depth, min_depth_exit)
+            max_depth_exit = Math.max(d.target.depth, max_depth_exit)
+        })
+
+        selection.enter().each(function(d) {
+            min_depth_enter = Math.min(d.source.depth, min_depth_enter)
+            max_depth_enter = Math.max(d.target.depth, max_depth_enter)
+        })
+
+        
+
+
+
+        links_layer.selectAll(".my_links").transition()
+
+        selection.enter()
+            .append("line")
+            .attr("class", "my_links")
+            .attr("opacity", 0)
+            .merge(selection)
+            .transition()
+            .duration(animation_duration)
+            .delay(function(d) {
+                return (d.target.depth-min_depth_enter) * animation_duration/constant.delay_proportion;
+            })
+            .attr("opacity", 1)
+           
+
+        selection.exit()
+            .transition()
+            .duration(animation_duration)
+            .delay(function(d) {
+                console.log(d.target.depth)
+                return (max_depth_exit-d.target.depth)  * animation_duration/constant.delay_proportion;
+            })
+            .attr("opacity", 0)
+            .remove();
+
+    
+        circles_layer.selectAll(".my_nodes").transition()
+
+        selection = circles_layer.selectAll(".my_nodes")
+            .data(dataholder.nodes, function(d) {
+                return d.id;
+            })
+
+        enterSelection = selection
+            .enter()
+            .append("g")
+            .attr("class", "my_nodes")
+       
+
+        circles = enterSelection.append("circle")
+            .call(node_drag)
+            .on("click", clicked);
+
+
+        rectangles = enterSelection.append("text")
+            .text(function(d) {
+                return d.data.text;
+            })
+            .style("font-size", function(d) {
+                var r = Math.pow(d.data.value, 0.5) * constant.circle_scale
+                var size = Math.min(2 * r, (2 * r - (r/2)) / this.getComputedTextLength() * 24);
+                if (size < 0) {
+                    var text_size = 0.01;
+                } else {
+                    var text_size = size;
+                }
+                d.text_size = text_size;
+                return text_size + "px"
+            })
+            .attr("dy", ".35em")
+            .style("fill", "black")
+            .attr("class", "circle_text")
+            .style("opacity", 0)
+
+        var currency_format = d3.format(",.1f")
+        rectangles = enterSelection.append("text")
+            .text(function(d) {
+                return "£" + currency_format(d.data.value) + "m";
+            })
+            .style("font-size", function(d) {
+                return (d.text_size / 2) + "px"
+            })
+            .attr("dy", "2em")
+            .style("fill", "white")
+            .attr("class", "circle_text")
+            .style("opacity", 0)
+
+        var perc_format = d3.format(",.1%")
+        rectangles = enterSelection.append("text")
+            .text(function(d) {
+                return perc_format(d.data.value /
+                    dataholder.root.data.value);
+            })
+            .style("font-size", function(d) {
+                return (d.text_size / 2) + "px"
+            })
+            .attr("dy", "-1.3em")
+            .style("fill", "white")
+            .attr("class", "circle_text")
+            .style("opacity", 0)
+
+        selection.merge(enterSelection)
+            .selectAll("text")
+            .transition()
+            .duration(animation_duration)
+            .delay(function(d) {
+                return (d.depth-min_depth_enter) * animation_duration/constant.delay_proportion 
+            })
+            .style("opacity", 0.5)
+
+
+        selection.merge(enterSelection).select("circle")
+            .transition()
+            .duration(animation_duration)
+            .delay(function(d) {
+                return (d.depth-min_depth_enter-1) * animation_duration/constant.delay_proportion 
+            })
+            .attr("r", function(d) {
+                return Math.pow(d.data.value, 0.5) * constant.circle_scale;
+            })
+            .attr("fill", function(d, i) {
+                return colour_scale(d.depth)
+            })
+       
+ 
+
+
+        selection.exit().selectAll("text")
+            .transition()
+            .duration(animation_duration)
+            .delay(function(d) {
+                return ((max_depth_exit)-d.depth) * animation_duration/constant.delay_proportion 
+            })
+            .style("opacity",0)
+           
+
+        selection.exit().selectAll("circle")
+            .transition()
+            .duration(animation_duration)
+            .delay(function(d) {
+                return ((max_depth_exit)-d.depth) * animation_duration/constant.delay_proportion 
+            })
+            .attr("r",0)
+           
+
+        selection
+            .exit()
+            .transition()
+            .duration(animation_duration)
+             .delay(function(d) {
+                return ((max_depth_exit)-d.depth) * animation_duration
+            })
+            .remove()
 
     }
 
@@ -150,17 +331,18 @@ function MyForceDirected() {
         }
       }
       dataholder.refresh_data()
+
+      me.enter_exit()
     }
 
     this.ticked = function() {
 
         var selection = links_layer.selectAll(".my_links")
-            .data(dataholder.links)
+            .data(dataholder.links, function(d) {
+                return d.target.id
+            })
 
-        selection.enter()
-            .append("line")
-            .attr("class", "my_links")
-            .merge(selection)
+        selection
             .attr("x1", function(d) {
                 return d.source.x;
             })
@@ -175,93 +357,22 @@ function MyForceDirected() {
             })
 
 
-        selection.exit().remove();
-
         // Update the nodes…
         selection = circles_layer.selectAll(".my_nodes")
             .data(dataholder.nodes, function(d) {
                 return d.id;
             })
 
-        //Entering
-        enterSelection = selection
-            .enter()
-            .append("g")
-            .attr("class", "my_nodes")
-
-        circles = enterSelection.append("circle").call(node_drag).on("click", clicked);
-
-        rectangles = enterSelection.append("text")
-            .text(function(d) {
-                return d.data.text;
-            })
-            .style("font-size", function(d) {
-                var r = Math.pow(d.data.value, 0.5) * constant.circle_scale
-
-
-                var size = Math.min(2 * r, (2 * r - (r/2)) / this.getComputedTextLength() * 24);
-                if (size < 0) {
-                    var text_size = 0.01;
-                } else {
-                    var text_size = size;
-
-                }
-
-                d.text_size = text_size;
-                return text_size + "px"
-
-
-            })
-            .attr("dy", ".35em")
-            .style("fill", "black")
-            .attr("class", "circle_text")
-            .style("opacity", 0.5)
-
-        var currency_format = d3.format(",.1f")
-        rectangles = enterSelection.append("text")
-            .text(function(d) {
-                return "£" + currency_format(d.data.value) + "m";
-            })
-            .style("font-size", function(d) {
-                return (d.text_size / 2) + "px"
-            })
-            .attr("dy", "2em")
-            .style("fill", "white")
-            .attr("class", "circle_text")
-            .style("opacity", 0.5)
-
-        var perc_format = d3.format(",.1%")
-        rectangles = enterSelection.append("text")
-            .text(function(d) {
-                return perc_format(d.data.value /
-                    dataholder.root.data.value);
-            })
-            .style("font-size", function(d) {
-                return (d.text_size / 2) + "px"
-            })
-            .attr("dy", "-1.3em")
-            .style("fill", "white")
-            .attr("class", "circle_text")
-            .style("opacity", 0.5)
-
 
         //Update
-        enterSelection.merge(selection)
+        selection.merge(selection)
             .attr("transform", function(d) {
                 return "translate(" + d.x + "," + d.y + ")"
             });
 
-        enterSelection.merge(selection).select("circle")
-            .attr("r", function(d) {
-                return Math.pow(d.data.value, 0.5) * constant.circle_scale;
-            })
-            .attr("fill", function(d, i) {
 
-                return colour_scale(d.depth)
 
-            })
-
-        selection.exit().remove()
+        
     }
 
 }
