@@ -8,11 +8,22 @@ function DataHolder() {
         first_node = {
             id: 1,
             parent: null,
-            value: 100,
+            value: 200,
             text: "level_0"
         }
         csv_data.push(first_node)
         var id_counter = 2;
+
+        var get_text = function(level) {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var length = Math.floor(Math.random() * 16)
+            // var length = 16
+            for(var i = 0; i < length; i++) {
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+            return text;
+        }
 
         function recurse(node, level) {
 
@@ -40,7 +51,7 @@ function DataHolder() {
                     id: id_counter,
                     parent: node.id,
                     value: d * node.value,
-                    text: "level_" + level
+                    text: get_text(level)
                 };
 
                 id_counter += 1;
@@ -59,6 +70,19 @@ function DataHolder() {
     }
 
     this.transform_csv_data = function() {
+
+        // Normalise data 
+        var max_value = -Infinity
+
+        me.csv_data.forEach(function(element) {
+                max_value = Math.max(element.value, max_value)
+        })
+        
+        me.csv_data.forEach(function(element) {
+                element.value_normalised = (element.value / max_value) * 100
+        })
+
+
         var root_fn = d3.stratify()
             .id(function(d) {
                 return d.id;

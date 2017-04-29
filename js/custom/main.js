@@ -38,7 +38,7 @@ function MyForceDirected() {
             bottom: 60,
             left: 60
         },
-        outerWidth = $(window).width();
+    outerWidth = $(window).width();
     outerHeight = $(window).height();
     innerWidth = outerWidth - margin.left - margin.right,
     innerHeight = outerHeight - margin.top - margin.bottom,
@@ -63,7 +63,6 @@ function MyForceDirected() {
 
         links_layer.selectAll("*").remove()
         circles_layer.selectAll("*").remove()
-
 
         this.simulation = d3.forceSimulation(dataholder.nodes)
         this.update_simulation()
@@ -90,7 +89,7 @@ function MyForceDirected() {
             .distance(function(d) {
                 //We want the distance to be equal so they are spaced in a circle around the parent
                 //So we use the source rather than destination as the length
-                return Math.pow(d.source.data.value, 0.5) * constant.circle_scale * constant.link_distance
+                return Math.pow(d.source.data.value_normalised, 0.5) * constant.circle_scale * constant.link_distance
             })
             .strength(function(d) {
                 //Strength just needs to be enough so that length is uniform
@@ -99,7 +98,7 @@ function MyForceDirected() {
         )
             .force("charge", d3.forceManyBody()
                 .strength(function(d) {
-                    var force = -Math.pow(d.data.value, 0.5) * constant.circle_scale;
+                    var force = -Math.pow(d.data.value_normalised, 0.5) * constant.circle_scale;
                     return force
                 })
                 .distanceMin(0)
@@ -107,7 +106,7 @@ function MyForceDirected() {
         )
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collide", d3.forceCollide(function(d) {
-                return Math.pow(d.data.value, 0.5) * constant.circle_scale
+                return Math.pow(d.data.value_normalised, 0.5) * constant.circle_scale
             }))
             .velocityDecay(constant.velocityDecay)
             .alphaMin(constant.alphaMin)
@@ -126,8 +125,6 @@ function MyForceDirected() {
         var selection = links_layer.selectAll(".my_links")
             .data(dataholder.links, function(d) {return d.target.id})
 
-
-
         var min_depth_enter = 100
         var max_depth_enter = 0
         var min_depth_exit = 100
@@ -143,9 +140,6 @@ function MyForceDirected() {
             min_depth_enter = Math.min(d.source.depth, min_depth_enter)
             max_depth_enter = Math.max(d.target.depth, max_depth_enter)
         })
-
-        
-
 
 
         links_layer.selectAll(".my_links").transition()
@@ -194,11 +188,18 @@ function MyForceDirected() {
 
         rectangles = enterSelection.append("text")
             .text(function(d) {
-                return d.data.text;
+
+                return d.data.text.substring(0,16);
             })
             .style("font-size", function(d) {
-                var r = Math.pow(d.data.value, 0.5) * constant.circle_scale
-                var size = Math.min(2 * r, (2 * r - (r/2)) / this.getComputedTextLength() * 24);
+                var r = Math.pow(d.data.value_normalised, 0.5) * constant.circle_scale  //Radius of circle
+
+                var text_length = d.data.text.length
+
+                var size_div_scale = d3.scalePow().exponent(2).domain([1,7,16]).range([1,2.2,4.8])
+                
+                var size = r/size_div_scale(text_length)  //getComputedTextLength is how many characters are visible
+                
                 if (size < 0) {
                     var text_size = 0.01;
                 } else {
@@ -218,7 +219,8 @@ function MyForceDirected() {
                 return "£" + currency_format(d.data.value) + "m";
             })
             .style("font-size", function(d) {
-                return (d.text_size / 2) + "px"
+                var r = Math.pow(d.data.value_normalised, 0.5) * constant.circle_scale 
+                return (r/3) + "px"
             })
             .attr("dy", "2em")
             .style("fill", "white")
@@ -232,7 +234,8 @@ function MyForceDirected() {
                     dataholder.root.data.value);
             })
             .style("font-size", function(d) {
-                return (d.text_size / 2) + "px"
+                var r = Math.pow(d.data.value_normalised, 0.5) * constant.circle_scale 
+                return (r/3) + "px"
             })
             .attr("dy", "-1.3em")
             .style("fill", "white")
@@ -256,7 +259,7 @@ function MyForceDirected() {
                 return (d.depth-min_depth_enter-1) * animation_duration/constant.delay_proportion 
             })
             .attr("r", function(d) {
-                return Math.pow(d.data.value, 0.5) * constant.circle_scale;
+                return Math.pow(d.data.value_normalised, 0.5) * constant.circle_scale;
             })
             .attr("fill", function(d, i) {
                 return colour_scale(d.depth)
